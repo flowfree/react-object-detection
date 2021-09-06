@@ -1,13 +1,17 @@
-import { useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 function ObjectDetector() {
+  const [image, setImage] = useState(null)
+  const [canvas, setCanvas] = useState(null)
   const imageRef = useRef(null)
   const canvasRef = useRef(null)
 
-  function handleFileChange(e) {
-    const image = imageRef.current
-    const canvas = canvasRef.current
+  useEffect(() => {
+    setImage(imageRef.current)
+    setCanvas(canvasRef.current)
+  }, [])
 
+  function handleFileChange(e) {
     if (e.target.files.length) {
       image.src = URL.createObjectURL(e.target.files[0])
       image.onload = () => {
@@ -21,10 +25,21 @@ function ObjectDetector() {
     canvas.width = image.width
     canvas.height = image.height
     ctx.drawImage(image, 0, 0, image.width, image.height)
-    ctx.beginPath()
+    labelObject('Person', 20, 20, 150, 150)
+  }
+
+  function labelObject(label, x, y, width, height) {
+    const ctx = canvas.getContext('2d')
     ctx.strokeStyle = 'red'
-    ctx.rect(20, 20, 100, 100)
+    ctx.rect(x, y, width, height)
     ctx.stroke()
+    ctx.font = '14px courier'
+    ctx.textBaseline = 'top'
+    const labelWidth = ctx.measureText(label).width
+    ctx.fillStyle = 'red'
+    ctx.fillRect(x, y, labelWidth, 14)
+    ctx.fillStyle = 'yellow'
+    ctx.fillText(label, x, y)
   }
 
   return (
