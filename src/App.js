@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
+require('@tensorflow/tfjs-backend-cpu')
+require('@tensorflow/tfjs-backend-webgl')
+const cocossd = require('@tensorflow-models/coco-ssd')
 
-function ObjectDetector() {
+function ObjectDetector({ model }) {
   const [image, setImage] = useState(null)
   const [canvas, setCanvas] = useState(null)
   const imageRef = useRef(null)
@@ -14,18 +17,22 @@ function ObjectDetector() {
   function handleFileChange(e) {
     if (e.target.files.length) {
       image.src = URL.createObjectURL(e.target.files[0])
-      image.onload = () => {
-        detectObjects(image, canvas)
-      }
+      image.onload = detectObjects
     }
   }
 
-  function detectObjects(image, canvas) {
+  function detectObjects() {
     const ctx = canvas.getContext('2d')
     canvas.width = image.width
     canvas.height = image.height
     ctx.drawImage(image, 0, 0, image.width, image.height)
-    labelObject('Person', 20, 20, 150, 150)
+    model
+      .detect(image)
+      .then(predictions => {
+        predictions.forEach(p => {
+          labelObject(p.class, p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3])
+        })
+      })
   }
 
   function labelObject(label, x, y, width, height) {
@@ -44,7 +51,6 @@ function ObjectDetector() {
 
   return (
     <div>
-      <h3 className="text-center mb-3">Object Detection with TensorFlow.js</h3>
       <form>
         <div className="mb-3">
           <input type="file" className="form-control" onChange={handleFileChange} />
@@ -59,11 +65,24 @@ function ObjectDetector() {
 }
 
 function App() {
+  const [model, setModel] = useState(null)
+
+  useEffect(() => {
+    cocossd.load().then(setModel)
+  }, [])
+
   return (
     <div className="container">
       <div className="row justify-content-md-center mt-3">
         <div className="col-md-8">
-          <ObjectDetector />
+          <h3 className="text-center mb-3">Object Detection with TensorFlow.js</h3>
+          {model ? (
+            <ObjectDetector model={model} />
+          ) : (
+            <p className="text-center">
+              Please wait while we are loading the model...
+            </p>
+          )}
         </div>
       </div>
     </div>

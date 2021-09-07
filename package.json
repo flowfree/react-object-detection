@@ -4,6 +4,10 @@
   "private": true,
   "dependencies": {
     "@popperjs/core": "^2.10.1",
+    "@tensorflow-models/coco-ssd": "^2.2.2",
+    "@tensorflow/tfjs": "^3.9.0",
+    "@tensorflow/tfjs-backend-cpu": "^3.9.0",
+    "@tensorflow/tfjs-backend-webgl": "^3.9.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
