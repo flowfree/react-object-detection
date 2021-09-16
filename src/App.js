@@ -1,3 +1,4 @@
+import './App.css'
 import { useState, useEffect } from 'react'
 import ObjectDetector from './components/ObjectDetector'
 
