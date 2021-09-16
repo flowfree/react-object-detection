@@ -1,15 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 
 function ObjectDetector({ model }) {
   const [image, setImage] = useState(null)
   const [canvas, setCanvas] = useState(null)
-  const imageRef = useRef(null)
-  const canvasRef = useRef(null)
-
-  useEffect(() => {
-    setImage(imageRef.current)
-    setCanvas(canvasRef.current)
-  }, [])
 
   function handleFileChange(e) {
     if (e.target.files.length) {
@@ -56,8 +49,8 @@ function ObjectDetector({ model }) {
         </div>
       </form>
       <div className="preview">
-        <img ref={imageRef} className="img-fluid" alt="" />
-        <canvas ref={canvasRef} />
+        <img ref={image => setImage(image)} className="img-fluid" alt="" />
+        <canvas ref={canvas => setCanvas(canvas)} />
       </div>
     </div>
   )
